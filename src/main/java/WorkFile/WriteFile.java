@@ -5,7 +5,7 @@ import java.io.IOException;
 
 public class WriteFile {
 
-    public boolean writeMas(String fileName, double[] mas) {
+    public static boolean writeMas(String fileName, double[] mas) {
         boolean result = true;
 
         try {

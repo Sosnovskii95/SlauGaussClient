@@ -1,6 +1,9 @@
 package UploadDownloadFile;
 
 import jakarta.servlet.RequestDispatcher;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.Part;
@@ -11,80 +14,65 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, // 2MB
-        maxFileSize = 1024 * 1024 * 10, // 10MB
-        maxRequestSize = 1024 * 1024 * 50) // 50MB
 public class UploadFileServlet extends HttpServlet {
 
-    public static final String SAVE_DIRECTORY = "uploadDir";
-
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        boolean multiPart = ServletFileUpload.isMultipartContent(request);
+        File file;
+        String filePath = getServletContext().getInitParameter("file-upload");
+        List<String> filesPath = new ArrayList<>();
+
+        DiskFileItemFactory factory = new DiskFileItemFactory();
+
+        ServletFileUpload upload = new ServletFileUpload(factory);
+
         try {
-            String description = request.getParameter("description");
-            System.out.println("Description: " + description);
+            List fileItems = upload.parseRequest(request);
 
-            // Gets absolute path to root directory of web app.
-            String appPath = request.getServletContext().getRealPath("");
-            appPath = appPath.replace('\\', '/');
+            // Process the uploaded file items
+            Iterator i = fileItems.iterator();
 
-            // The directory to save uploaded file
-            String fullSavePath = null;
-            if (appPath.endsWith("/")) {
-                fullSavePath = appPath + SAVE_DIRECTORY;
-            } else {
-                fullSavePath = appPath + "/" + SAVE_DIRECTORY;
-            }
+            while (i.hasNext()) {
+                FileItem fi = (FileItem) i.next();
+                if (!fi.isFormField()) {
+                    // Get the uploaded file parameters
+                    /*String fieldName = fi.getFieldName();
+                    String fileName = fi.getName();
+                    String contentType = fi.getContentType();
+                    boolean isInMemory = fi.isInMemory();
+                    long sizeInBytes = fi.getSize();
 
-            // Creates the save directory if it does not exists
-            File fileSaveDir = new File(fullSavePath);
-            if (!fileSaveDir.exists()) {
-                fileSaveDir.mkdir();
-            }
-
-            // Part list (multi files).
-            for (Part part : request.getParts()) {
-                String fileName = extractFileName(part);
-                if (fileName != null && fileName.length() > 0) {
-                    String filePath = fullSavePath + File.separator + fileName;
-                    System.out.println("Write attachment to file: " + filePath);
-                    // Write to file
-                    part.write(filePath);
+                    // Write the file
+                    if (fileName.lastIndexOf("\\") >= 0) {
+                        file = new File(filePath + fileName.substring(fileName.lastIndexOf("\\")));
+                    } else {
+                        file = new File(filePath + fileName.substring(fileName.lastIndexOf("\\") + 1));
+                    }
+                    filesPath.add(file.getPath());
+                    fi.write(file);*/
+                }
+                else
+                {
+                    String fieldName = fi.getFieldName();
+                    if (fieldName.equals("servers"))
+                    {
+                        System.out.println(fi.getString());
+                    }
                 }
             }
-            // Upload successfully!.
-            //response.sendRedirect(request.getContextPath() + "/uploadFileResults");
-        } catch (Exception e) {
-            e.printStackTrace();
-            request.setAttribute("errorMessage", "Error: " + e.getMessage());
-            request.getRequestDispatcher("/index.jsp").forward(request,response);
-            /*RequestDispatcher dispatcher =request.getServletContext().getRequestDispatcher("/WEB-INF/jsps/uploadFile.jsp");
-            dispatcher.forward(request, response);*/
+        } catch (Exception ex) {
+            System.out.println(ex);
         }
-    }
-
-    private String extractFileName(Part part) {
-        // form-data; name="file"; filename="C:\file1.zip"
-        // form-data; name="file"; filename="C:\Note\file2.zip"
-        String contentDisp = part.getHeader("content-disposition");
-        String[] items = contentDisp.split(";");
-        for (String s : items) {
-            if (s.trim().startsWith("filename")) {
-                // C:\file1.zip
-                // C:\Note\file2.zip
-                String clientFileName = s.substring(s.indexOf("=") + 2, s.length() - 1);
-                clientFileName = clientFileName.replace("\\", "/");
-                int i = clientFileName.lastIndexOf('/');
-                // file1.zip
-                // file2.zip
-                return clientFileName.substring(i + 1);
-            }
-        }
-        return null;
+        request.setAttribute("filesPath", filesPath);
+        request.getRequestDispatcher("/notSeverServlet").forward(request,response);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/uploadFile.jsp").forward(request, response);
-
     }
 }

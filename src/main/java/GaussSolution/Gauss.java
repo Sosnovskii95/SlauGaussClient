@@ -15,6 +15,11 @@ public class Gauss {
         this.masB = masB;
     }
 
+    public double[] getMasX()
+    {
+        return this.masX;
+    }
+
     public void Solution() {
         sol = true;
         int N = matrixA.length;

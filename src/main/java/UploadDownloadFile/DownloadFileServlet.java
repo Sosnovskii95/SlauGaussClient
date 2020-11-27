@@ -36,7 +36,7 @@ public class DownloadFileServlet extends HttpServlet {
             inputStream.close();
         }
         //Перенаправление браузера на страницу отчетов
-        //response.sendRedirect("adminview/report/report.jsp");
+        response.sendRedirect("index.jsp");
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

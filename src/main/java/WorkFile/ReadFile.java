@@ -12,30 +12,28 @@ public class ReadFile {
     public static double[][] readMatrix(String fileName) {
 
         double[][] matrix = null;
-
         try {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
             List<String> lines = new ArrayList<>();
 
-            while (br.ready()) {
-                lines.add(br.readLine());
+            String s;
+            while ((s = br.readLine()) != null) {
+                lines.add(s);
+
             }
-            int matrixWidth = lines.get(0).split("\\s").length;
+            int matrixWidth = lines.get(0).split("\\s+").length;
             int matrixHeight = lines.size();
             matrix = new double[matrixHeight][matrixWidth];
 
+
             for (int i = 0; i < matrixHeight; i++) {
-                for (int j = 0; j < matrixWidth; j++) {
-                    String str = lines.get(i).replaceAll(",",".");
-                    String[] line = str.split("\\s");
-                    matrix[i][j] = Double.parseDouble(line[j]);
-                }
+                String str = lines.get(i).replaceAll(",", ".");
+                String[] line = str.split("\\s+");
+                matrix[i] = Arrays.stream(line).mapToDouble(Double::parseDouble).toArray();
             }
-        }catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
         return matrix;
     }
 
@@ -47,8 +45,9 @@ public class ReadFile {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
             List<String> lines = new ArrayList<>();
 
-            while (br.ready()) {
-                lines.add(br.readLine());
+            String s;
+            while ((s = br.readLine()) != null) {
+                lines.add(s);
             }
             int masHeight = lines.size();
             mas = new double[masHeight];
@@ -62,5 +61,25 @@ public class ReadFile {
         }
 
         return mas;
+    }
+
+    public static boolean checkFile(String fileName) {
+        boolean resultChecked = false;
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(fileName));
+
+            String s;
+            while ((s = br.readLine()) != null) {
+                if (s.split("\\s+").length > 1) {
+                    resultChecked = true;
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return resultChecked;
     }
 }

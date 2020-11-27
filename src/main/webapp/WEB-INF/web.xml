@@ -4,6 +4,14 @@
 
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
+    <context-param>
+        <param-name>file-upload</param-name>
+        <param-value>
+            c:\Program Files\Apache Software Foundation\Tomcat 9.0\webapps\data\
+        </param-value>
+        <description>Location</description>
+    </context-param>
+
     <servlet>
         <servlet-name>UploadFileServlet</servlet-name>
         <servlet-class>UploadDownloadFile.UploadFileServlet</servlet-class>
@@ -11,6 +19,10 @@
     <servlet>
         <servlet-name>DownloadFileServlet</servlet-name>
         <servlet-class>UploadDownloadFile.DownloadFileServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>NotServerServlet</servlet-name>
+        <servlet-class>SolutionSlau.NotServerServlet</servlet-class>
     </servlet>
 
 
@@ -21,5 +33,9 @@
     <servlet-mapping>
         <servlet-name>DownloadFileServlet</servlet-name>
         <url-pattern>/downloadFile</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>NotServerServlet</servlet-name>
+        <url-pattern>/notSeverServlet</url-pattern>
     </servlet-mapping>
 </web-app>

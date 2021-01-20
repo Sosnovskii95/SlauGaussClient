@@ -1,6 +1,7 @@
 package SolutionSlau;
 
 import GaussSolution.Gauss;
+import GaussSolution.GaussNetwork;
 import WorkFile.ReadFile;
 import WorkFile.WriteFile;
 
@@ -12,10 +13,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-public class NotServerServlet extends HttpServlet {
+public class ServerServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<String> filesPath = (List<String>) request.getAttribute("filesPath");
+        List<String> serversInfo = (List<String>) request.getAttribute("serversInfo");
         String filePath = getServletContext().getInitParameter("file-upload") + "find_mas_x.txt";
+        GaussNetwork gaussNetwork = null;
         Gauss gauss = null;
 
         if (ReadFile.checkFile(filesPath.get(0))) {
@@ -24,14 +27,15 @@ public class NotServerServlet extends HttpServlet {
             gauss = new Gauss(ReadFile.readMatrix(filesPath.get(1)), ReadFile.readMas(filesPath.get(0)));
         }
         if (gauss != null) {
-            long startTime = System.currentTimeMillis();
+            long startTime = System.nanoTime();
             gauss.Solution();
-            gauss.findMasX();
-            long endTime = System.currentTimeMillis();
-            WriteFile.writeMas(filePath, gauss.getMasX());
+            gaussNetwork = new GaussNetwork(gauss.getMatrixA(), gauss.getMasB(), serversInfo);
+            gaussNetwork.Solution();
+            long endTime = System.nanoTime() - startTime;
+            WriteFile.writeMas(filePath, gaussNetwork.getMasX());
             request.setAttribute("pathName", filePath);
-            request.setAttribute("time", (endTime-startTime));
-            request.setAttribute("mode", "Однопоточный");
+            request.setAttribute("time", endTime);
+            request.setAttribute("mode", "Многопоточный");
             request.getRequestDispatcher("/solution.jsp").forward(request, response);
         }
     }

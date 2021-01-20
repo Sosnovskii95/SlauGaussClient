@@ -57,10 +57,14 @@
         var list = document.getElementById("listServers");
         var entry = document.createElement('li');
         entry.appendChild(document.createTextNode(ip.value + ":" + port.value));
-        entry.setAttribute('value', ip.value + ":" + port.value);
         list.appendChild(entry);
         var server = document.getElementById("servers");
-        server.value = server.value+";"+ip.value+":"+port.value;
+        if (server.value == "") {
+            server.value = ip.value+":"+port.value;
+        }
+        else {
+            server.value = server.value+";"+ip.value+":"+port.value;
+        }
         ip.value = "";
         port.value = "";
     }

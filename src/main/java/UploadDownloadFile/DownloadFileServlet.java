@@ -14,7 +14,7 @@ import java.rmi.server.ExportException;
 public class DownloadFileServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        File file = new File(request.getAttribute("pathName").toString());
+        File file = new File(request.getParameter("pathName"));
         ServletOutputStream outputStream = null;
         BufferedInputStream inputStream = null;
         try {

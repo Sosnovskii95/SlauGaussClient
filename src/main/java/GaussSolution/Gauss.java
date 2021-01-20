@@ -15,6 +15,10 @@ public class Gauss {
         this.masB = masB;
     }
 
+    public double[][] getMatrixA(){return  this.matrixA;}
+
+    public double[] getMasB(){return  this.masB;}
+
     public double[] getMasX()
     {
         return this.masX;
@@ -39,14 +43,6 @@ public class Gauss {
             masB[i] = masB[max];
             masB[max] = t;
 
-            if (Math.abs(matrixA[i][i]) <= 1e-10) {
-                sol = false;
-            }
-            if (!sol)
-            {
-                return;
-            }
-
             for (int j = i + 1; j < N; j++) {
                 double alpha = matrixA[j][i] / matrixA[i][i];
                 masB[j] -= alpha * masB[i];
@@ -54,6 +50,7 @@ public class Gauss {
                     matrixA[j][k] -= alpha * matrixA[i][k];
                 }
             }
+
         }
     }
 

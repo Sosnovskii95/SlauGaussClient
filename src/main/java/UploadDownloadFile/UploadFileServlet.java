@@ -1,12 +1,8 @@
 package UploadDownloadFile;
 
-import jakarta.servlet.RequestDispatcher;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-
-import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.http.Part;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,6 +22,8 @@ public class UploadFileServlet extends HttpServlet {
         File file;
         String filePath = getServletContext().getInitParameter("file-upload");
         List<String> filesPath = new ArrayList<>();
+        List<String> serversInfo = new ArrayList<>();
+        String typeSolution = null;
 
         DiskFileItemFactory factory = new DiskFileItemFactory();
 
@@ -42,7 +39,7 @@ public class UploadFileServlet extends HttpServlet {
                 FileItem fi = (FileItem) i.next();
                 if (!fi.isFormField()) {
                     // Get the uploaded file parameters
-                    /*String fieldName = fi.getFieldName();
+                    String fieldName = fi.getFieldName();
                     String fileName = fi.getName();
                     String contentType = fi.getContentType();
                     boolean isInMemory = fi.isInMemory();
@@ -55,14 +52,21 @@ public class UploadFileServlet extends HttpServlet {
                         file = new File(filePath + fileName.substring(fileName.lastIndexOf("\\") + 1));
                     }
                     filesPath.add(file.getPath());
-                    fi.write(file);*/
+                    fi.write(file);
                 }
                 else
                 {
-                    String fieldName = fi.getFieldName();
-                    if (fieldName.equals("servers"))
+                    if (fi.getFieldName().equals("servers"))
                     {
-                        System.out.println(fi.getString());
+                        String[] servers = fi.getString().split(";");
+                        for (String str: servers
+                             ) {
+                            serversInfo.add(str);
+                        }
+                    }
+                    if (fi.getFieldName().equals("mode"))
+                    {
+                        typeSolution = fi.getString();
                     }
                 }
             }
@@ -70,7 +74,14 @@ public class UploadFileServlet extends HttpServlet {
             System.out.println(ex);
         }
         request.setAttribute("filesPath", filesPath);
-        request.getRequestDispatcher("/notSeverServlet").forward(request,response);
+        if (typeSolution.equals("many"))
+        {
+            request.setAttribute("serversInfo", serversInfo);
+            request.getRequestDispatcher("/server").forward(request, response);
+        }
+        else {
+            request.getRequestDispatcher("/notServer").forward(request,response);
+        }
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -24,6 +24,10 @@
         <servlet-name>NotServerServlet</servlet-name>
         <servlet-class>SolutionSlau.NotServerServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ServerServlet</servlet-name>
+        <servlet-class>SolutionSlau.ServerServlet</servlet-class>
+    </servlet>
 
 
     <servlet-mapping>
@@ -36,6 +40,10 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>NotServerServlet</servlet-name>
-        <url-pattern>/notSeverServlet</url-pattern>
+        <url-pattern>/notServer</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ServerServlet</servlet-name>
+        <url-pattern>/server</url-pattern>
     </servlet-mapping>
 </web-app>
